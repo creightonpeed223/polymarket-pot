@@ -729,12 +729,37 @@ async def get_autobot_trades(limit: int = Query(default=20, le=100)):
     try:
         from autobot.main import get_bot
         bot = get_bot()
-        executor = bot.executor
         trader = bot.trader
 
         trades = []
 
-        # Get closed trades first (most recent)
+        # Get actually open positions first
+        open_positions = trader.get_positions()
+        for pos in open_positions:
+            trade_data = {
+                "id": pos.get("id"),
+                "market_name": pos.get("market", "Unknown"),
+                "side": pos.get("side"),
+                "size_usd": pos.get("value", 0),
+                "size_shares": pos.get("size", 0),
+                "entry_price": pos.get("price", 0),
+                "exit_price": None,
+                "pnl": pos.get("unrealized_pnl", 0),
+                "pnl_pct": pos.get("pnl_pct", 0),
+                "won": None,
+                "close_reason": None,
+                "status": "OPEN",
+                "entry_time": pos.get("entry_time", ""),
+                "exit_time": None,
+                "stop_loss_price": pos.get("stop_loss_price"),
+                "take_profit_price": pos.get("take_profit_price"),
+                "breakeven_triggered": pos.get("breakeven_triggered", False),
+                "trailing_stop_active": pos.get("trailing_stop_active", False),
+                "paper": pos.get("paper", True),
+            }
+            trades.append(trade_data)
+
+        # Get closed trades (most recent)
         closed_trades = trader.get_closed_trades(limit)
         for trade in closed_trades:
             trade_data = {
@@ -757,35 +782,6 @@ async def get_autobot_trades(limit: int = Query(default=20, le=100)):
                 "breakeven_triggered": trade.get("breakeven_triggered", False),
                 "trailing_stop_active": trade.get("trailing_stop_active", False),
                 "paper": trade.get("paper", True),
-            }
-            trades.append(trade_data)
-
-        # Get open trades from executor
-        executed = executor.get_executed_trades()
-        for decision in executed[-limit:]:
-            # Check if this position is still open
-            position_id = f"paper_{decision.result.get('id', '')}" if decision.result else None
-
-            trade_data = {
-                "id": f"autobot_{hash(decision.match.question)}_{decision.match.edge}",
-                "market_name": decision.match.question,
-                "market_id": decision.match.market_id,
-                "side": decision.match.recommended_side,
-                "size_usd": decision.size_usd,
-                "size_shares": decision.size_shares,
-                "entry_price": decision.match.current_yes_price if decision.match.recommended_side == "YES" else decision.match.current_no_price,
-                "exit_price": None,
-                "pnl": None,
-                "pnl_pct": None,
-                "won": None,
-                "close_reason": None,
-                "status": "OPEN",
-                "edge": decision.match.edge,
-                "confidence": decision.match.confidence,
-                "event_headline": decision.event.headline,
-                "event_type": decision.event.event_type.value if hasattr(decision.event.event_type, 'value') else str(decision.event.event_type),
-                "executed": decision.executed,
-                "paper": True,
             }
             trades.append(trade_data)
 
