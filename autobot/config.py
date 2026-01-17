@@ -110,8 +110,8 @@ def load_config() -> BotConfig:
     return BotConfig(
         trading=TradingConfig(
             starting_capital=float(os.getenv("STARTING_CAPITAL", "10000")),
-            risk_per_trade_pct=float(os.getenv("RISK_PER_TRADE_PCT", "0.02")),
-            max_position_pct=float(os.getenv("MAX_POSITION_PCT", "0.20")),
+            risk_per_trade_pct=float(os.getenv("RISK_PER_TRADE_PCT", "0.05")),
+            max_position_pct=float(os.getenv("MAX_POSITION_PCT", "0.30")),
             min_edge_to_trade=float(os.getenv("MIN_EDGE", "0.30")),
             max_daily_loss_pct=float(os.getenv("MAX_DAILY_LOSS_PCT", "0.10")),
             max_concurrent_positions=int(os.getenv("MAX_CONCURRENT", "10")),
