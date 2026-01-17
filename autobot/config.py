@@ -26,9 +26,9 @@ class TradingConfig:
     max_concurrent_positions: int = 10
 
     # Stop loss / Take profit / Trailing stop (as percentages)
-    stop_loss_pct: float = 0.15  # 15% stop loss
-    take_profit_pct: float = 0.30  # 30% take profit
-    trailing_stop_pct: float = 0.10  # 10% trailing stop (activates after breakeven)
+    stop_loss_pct: float = 0.15  # 15% stop loss - protects from big losses
+    take_profit_pct: float = 0.50  # 50% take profit - let winners run longer
+    trailing_stop_pct: float = 0.07  # 7% trailing stop - locks in more profit
     breakeven_trigger_pct: float = 0.10  # Move stop to breakeven after 10% profit
     use_trailing_stop: bool = True  # Enable trailing stop after breakeven
 

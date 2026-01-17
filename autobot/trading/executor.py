@@ -18,7 +18,7 @@ from ..data import database as db
 logger = get_logger(__name__)
 
 # Cooldown period before trading the same market again (hours)
-MARKET_COOLDOWN_HOURS = 4
+MARKET_COOLDOWN_HOURS = 2
 
 
 def _load_recent_trades_from_db() -> Dict[str, datetime]:
