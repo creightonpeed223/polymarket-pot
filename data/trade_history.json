@@ -1,0 +1,46 @@
+{
+  "trades": [
+    {
+      "id": "0xbb57ccf5853a85487bc3d83d04d669310d28c6c810758953b9d9b91d1aee89d2_105267568073659068217311993901927962476298440625043565106676088842803600775810_1768670608.341818",
+      "market_id": "0xbb57ccf5853a85487bc3d83d04d669310d28c6c810758953b9d9b91d1aee89d2",
+      "market_name": "Will bitcoin hit $1m before GTA VI?",
+      "token_id": "105267568073659068217311993901927962476298440625043565106676088842803600775810",
+      "side": "YES",
+      "size": 103.09278350515464,
+      "entry_price": 0.485,
+      "exit_price": 0.485,
+      "risk_amount": 50.0,
+      "pnl": 0.0,
+      "pnl_percent": 0.0,
+      "close_reason": "Break Even",
+      "opened_at": "2026-01-17T17:23:28.341832+00:00",
+      "closed_at": "2026-01-17T17:23:40.822560+00:00",
+      "duration_seconds": 12,
+      "paper": true,
+      "signal_confidence": 0.0,
+      "stop_loss_price": 0.0,
+      "take_profit_price": 0.0
+    },
+    {
+      "id": "0xbb57ccf5853a85487bc3d83d04d669310d28c6c810758953b9d9b91d1aee89d2_91863162118308663069733924043159186005106558783397508844234610341221325526200_1768670945.664477",
+      "market_id": "0xbb57ccf5853a85487bc3d83d04d669310d28c6c810758953b9d9b91d1aee89d2",
+      "market_name": "Will bitcoin hit $1m before GTA VI?",
+      "token_id": "91863162118308663069733924043159186005106558783397508844234610341221325526200",
+      "side": "NO",
+      "size": 97.08737864077669,
+      "entry_price": 0.515,
+      "exit_price": 0.515,
+      "risk_amount": 50.0,
+      "pnl": 0.0,
+      "pnl_percent": 0.0,
+      "close_reason": "Break Even",
+      "opened_at": "2026-01-17T17:29:05.664490+00:00",
+      "closed_at": "2026-01-17T17:31:27.396794+00:00",
+      "duration_seconds": 141,
+      "paper": true,
+      "signal_confidence": 0.0,
+      "stop_loss_price": 0.0,
+      "take_profit_price": 0.0
+    }
+  ]
+}

@@ -1,0 +1,196 @@
+/* Custom styles for Polymarket BTC Trading Bot */
+
+/* Signal direction colors */
+.signal-buy {
+    color: #22c55e;
+}
+
+.signal-sell {
+    color: #ef4444;
+}
+
+.signal-hold {
+    color: #6b7280;
+}
+
+/* Confidence bar colors */
+.confidence-low {
+    background-color: #ef4444;
+}
+
+.confidence-medium {
+    background-color: #eab308;
+}
+
+.confidence-high {
+    background-color: #22c55e;
+}
+
+/* Indicator signal badges */
+.indicator-bullish {
+    color: #22c55e;
+}
+
+.indicator-bearish {
+    color: #ef4444;
+}
+
+.indicator-neutral {
+    color: #6b7280;
+}
+
+/* Position card styles */
+.position-card {
+    background-color: #374151;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.position-profit {
+    color: #22c55e;
+}
+
+.position-loss {
+    color: #ef4444;
+}
+
+/* Toast notification styles */
+.toast {
+    animation: slideIn 0.3s ease-out;
+}
+
+.toast-success {
+    background-color: #166534;
+    border-left: 4px solid #22c55e;
+}
+
+.toast-error {
+    background-color: #7f1d1d;
+    border-left: 4px solid #ef4444;
+}
+
+.toast-info {
+    background-color: #1e3a5f;
+    border-left: 4px solid #3b82f6;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Chart container */
+#chart-container {
+    background-color: #1f2937;
+}
+
+/* Loading spinner */
+.spinner {
+    border: 3px solid #374151;
+    border-top: 3px solid #f97316;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Button active state */
+.tf-btn.active {
+    background-color: #ea580c;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .col-span-8 {
+        grid-column: span 12;
+    }
+    .col-span-4 {
+        grid-column: span 12;
+    }
+}
+
+/* Pulse animation for live price */
+.price-pulse {
+    animation: pulse 0.5s ease-out;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Prediction direction glow effect for high confidence */
+.prediction-glow-up {
+    text-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+.prediction-glow-down {
+    text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* Probability bar transitions */
+#prob-up-bar, #prob-down-bar {
+    transition: width 0.5s ease-out;
+}
+
+/* Signal update flash */
+.signal-update {
+    animation: flashUpdate 0.3s ease-out;
+}
+
+@keyframes flashUpdate {
+    0% {
+        background-color: rgba(249, 115, 22, 0.3);
+    }
+    100% {
+        background-color: transparent;
+    }
+}

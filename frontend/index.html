@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polymarket Speed Bot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #0d1117; }
+        .stat-card { background-color: #161b22; border: 1px solid #30363d; }
+        .section-card { background-color: #161b22; border: 1px solid #30363d; }
+    </style>
+</head>
+<body class="text-gray-100 min-h-screen p-3 sm:p-6">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
+        <h1 class="text-xl sm:text-3xl font-bold text-green-400">Polymarket Speed Bot</h1>
+        <div class="flex flex-wrap items-center gap-2 sm:space-x-3">
+            <span class="px-4 py-2 bg-gray-700 rounded-lg text-sm font-semibold">PAPER</span>
+            <span id="status-badge" class="px-4 py-2 bg-green-600 rounded-lg text-sm font-semibold flex items-center">
+                <span class="w-2 h-2 bg-white rounded-full mr-2"></span>
+                Running
+            </span>
+            <button class="p-2 bg-gray-700 rounded-lg hover:bg-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+            </button>
+            <button id="pause-btn" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-400 rounded-lg text-sm font-semibold text-black flex items-center">
+                <span class="mr-2">⏸</span> Pause
+            </button>
+            <button id="kill-btn" class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg text-sm font-semibold flex items-center">
+                <span class="mr-2">⏻</span> Kill Switch
+            </button>
+        </div>
+    </div>
+
+    <!-- Top Stats Row -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-4 mb-4">
+        <div class="stat-card rounded-lg p-2 sm:p-4">
+            <div class="text-xs text-gray-400 uppercase tracking-wide mb-1">Portfolio</div>
+            <div id="stat-portfolio" class="text-lg sm:text-2xl font-bold">$10,000.00</div>
+        </div>
+        <div class="stat-card rounded-lg p-2 sm:p-4">
+            <div class="text-xs text-gray-400 uppercase tracking-wide mb-1">Daily P&L</div>
+            <div id="stat-daily-pnl" class="text-lg sm:text-2xl font-bold text-green-400">+$0.00</div>
+        </div>
+        <div class="stat-card rounded-lg p-2 sm:p-4">
+            <div class="text-xs text-gray-400 uppercase tracking-wide mb-1">Unrealized</div>
+            <div id="stat-unrealized" class="text-lg sm:text-2xl font-bold text-green-400">+$0.00</div>
+        </div>
+        <div class="stat-card rounded-lg p-2 sm:p-4">
+            <div class="text-xs text-gray-400 uppercase tracking-wide mb-1">Win Rate</div>
+            <div id="stat-winrate" class="text-lg sm:text-2xl font-bold">--%</div>
+        </div>
+        <div class="stat-card rounded-lg p-2 sm:p-4">
+            <div class="text-xs text-gray-400 uppercase tracking-wide mb-1">Trades</div>
+            <div id="stat-trades" class="text-lg sm:text-2xl font-bold">0</div>
+        </div>
+        <div class="stat-card rounded-lg p-2 sm:p-4">
+            <div class="text-xs text-gray-400 uppercase tracking-wide mb-1">Positions</div>
+            <div id="stat-positions" class="text-lg sm:text-2xl font-bold">0</div>
+        </div>
+        <div class="stat-card rounded-lg p-2 sm:p-4">
+            <div class="text-xs text-gray-400 uppercase tracking-wide mb-1">Max Drawdown</div>
+            <div id="stat-drawdown" class="text-lg sm:text-2xl font-bold">0%</div>
+        </div>
+        <div class="stat-card rounded-lg p-2 sm:p-4">
+            <div class="text-xs text-gray-400 uppercase tracking-wide mb-1">Profit Factor</div>
+            <div id="stat-pf" class="text-lg sm:text-2xl font-bold">--</div>
+        </div>
+    </div>
+
+    <!-- Second Stats Row -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-6">
+        <div class="stat-card rounded-lg p-2 sm:p-4">
+            <div class="text-xs text-gray-400 uppercase tracking-wide mb-1">Avg Win</div>
+            <div id="stat-avg-win" class="text-lg sm:text-2xl font-bold text-green-400">$0</div>
+        </div>
+        <div class="stat-card rounded-lg p-2 sm:p-4">
+            <div class="text-xs text-gray-400 uppercase tracking-wide mb-1">Avg Loss</div>
+            <div id="stat-avg-loss" class="text-lg sm:text-2xl font-bold text-red-400">$0</div>
+        </div>
+        <div class="stat-card rounded-lg p-2 sm:p-4">
+            <div class="text-xs text-gray-400 uppercase tracking-wide mb-1">Best Trade</div>
+            <div id="stat-best" class="text-lg sm:text-2xl font-bold text-green-400">+$0</div>
+        </div>
+        <div class="stat-card rounded-lg p-2 sm:p-4">
+            <div class="text-xs text-gray-400 uppercase tracking-wide mb-1">Worst Trade</div>
+            <div id="stat-worst" class="text-lg sm:text-2xl font-bold text-red-400">-$0</div>
+        </div>
+    </div>
+
+    <!-- Equity Curve -->
+    <div class="section-card rounded-lg p-4 mb-6">
+        <div class="flex items-center mb-4">
+            <input type="checkbox" id="show-equity" checked class="mr-2">
+            <label for="show-equity" class="text-sm font-semibold">Equity Curve</label>
+        </div>
+        <div class="h-48">
+            <canvas id="equity-chart"></canvas>
+        </div>
+    </div>
+
+    <!-- Sports & Politics Trading -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
+        <!-- Sports Trading -->
+        <div class="section-card rounded-lg p-2 sm:p-4">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <span class="text-xl mr-2">🏈</span>
+                    <span class="font-semibold">Sports Trading</span>
+                </div>
+                <span id="sports-live" class="px-3 py-1 bg-green-600 rounded text-xs font-bold">LIVE</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2 sm:p-4">
+                <div>
+                    <div class="text-xs text-gray-400 uppercase">Trades</div>
+                    <div id="sports-trades" class="text-base sm:text-xl font-bold">0</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-400 uppercase">Win Rate</div>
+                    <div id="sports-winrate" class="text-base sm:text-xl font-bold">--%</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-400 uppercase">Profit</div>
+                    <div id="sports-profit" class="text-base sm:text-xl font-bold text-green-400">$0</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-400 uppercase">Events</div>
+                    <div id="sports-events" class="text-base sm:text-xl font-bold">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Politics Trading -->
+        <div class="section-card rounded-lg p-2 sm:p-4">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <span class="text-xl mr-2">🏛</span>
+                    <span class="font-semibold">Politics Trading</span>
+                </div>
+                <span id="politics-live" class="px-3 py-1 bg-green-600 rounded text-xs font-bold">LIVE</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2 sm:p-4">
+                <div>
+                    <div class="text-xs text-gray-400 uppercase">Trades</div>
+                    <div id="politics-trades" class="text-base sm:text-xl font-bold">0</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-400 uppercase">Win Rate</div>
+                    <div id="politics-winrate" class="text-base sm:text-xl font-bold">--%</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-400 uppercase">Profit</div>
+                    <div id="politics-profit" class="text-base sm:text-xl font-bold text-green-400">$0</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-400 uppercase">Events</div>
+                    <div id="politics-events" class="text-base sm:text-xl font-bold">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Events Feed -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
+        <!-- Sports Events -->
+        <div class="section-card rounded-lg p-2 sm:p-4">
+            <div class="flex items-center justify-between mb-4">
+                <span class="font-semibold">🏈 Sports Events</span>
+                <span class="text-xs text-gray-400" id="sports-events-count">0 events</span>
+            </div>
+            <div id="sports-events-list" class="space-y-2 max-h-64 overflow-y-auto">
+                <p class="text-gray-500 text-sm text-center py-4">Waiting for sports events...</p>
+            </div>
+        </div>
+
+        <!-- Politics Events -->
+        <div class="section-card rounded-lg p-2 sm:p-4">
+            <div class="flex items-center justify-between mb-4">
+                <span class="font-semibold">🏛 Politics Events</span>
+                <span class="text-xs text-gray-400" id="politics-events-count">0 events</span>
+            </div>
+            <div id="politics-events-list" class="space-y-2 max-h-64 overflow-y-auto">
+                <p class="text-gray-500 text-sm text-center py-4">Waiting for political events...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Open Positions -->
+    <div class="section-card rounded-lg p-4 mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <span class="font-semibold">Open Positions</span>
+            <span class="text-xs text-gray-400" id="positions-count">0 positions</span>
+        </div>
+        <div id="positions-list" class="space-y-2">
+            <p class="text-gray-500 text-sm text-center py-4">No open positions</p>
+        </div>
+    </div>
+
+    <!-- Recent Trades -->
+    <div class="section-card rounded-lg p-2 sm:p-4">
+        <div class="flex items-center justify-between mb-4">
+            <span class="font-semibold">Recent Trades</span>
+            <div class="flex items-center space-x-4">
+                <span id="trade-stats" class="text-xs text-gray-400"></span>
+                <span class="text-xs text-gray-400" id="trades-count-label">0 trades</span>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-gray-400 border-b border-gray-700">
+                        <th class="text-left py-2 px-2">Time</th>
+                        <th class="text-left py-2 px-2">Market</th>
+                        <th class="text-center py-2 px-2">Side</th>
+                        <th class="text-right py-2 px-2">Risk</th>
+                        <th class="text-right py-2 px-2">Entry</th>
+                        <th class="text-right py-2 px-2">Exit</th>
+                        <th class="text-right py-2 px-2">P&L</th>
+                        <th class="text-center py-2 px-2">Result</th>
+                        <th class="text-center py-2 px-2">Reason</th>
+                    </tr>
+                </thead>
+                <tbody id="trades-body">
+                    <tr>
+                        <td colspan="9" class="py-8 text-center text-gray-500">No trades yet</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Equity Chart
+        let equityChart;
+        const equityData = [10000];
+        const equityLabels = [new Date().toLocaleTimeString()];
+
+        function initEquityChart() {
+            const ctx = document.getElementById('equity-chart').getContext('2d');
+            equityChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: equityLabels,
+                    datasets: [{
+                        label: 'Equity',
+                        data: equityData,
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { display: false },
+                        y: {
+                            grid: { color: '#30363d' },
+                            ticks: { color: '#8b949e' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load bot status
+        async function loadStatus() {
+            try {
+                const response = await fetch('/api/events/status');
+                const status = await response.json();
+
+                const badge = document.getElementById('status-badge');
+                if (status.running) {
+                    badge.innerHTML = '<span class="w-2 h-2 bg-white rounded-full mr-2"></span>Running';
+                    badge.className = 'px-4 py-2 bg-green-600 rounded-lg text-sm font-semibold flex items-center';
+                } else {
+                    badge.innerHTML = '<span class="w-2 h-2 bg-white rounded-full mr-2"></span>Stopped';
+                    badge.className = 'px-4 py-2 bg-red-600 rounded-lg text-sm font-semibold flex items-center';
+                }
+            } catch (e) {
+                console.error('Failed to load status:', e);
+            }
+        }
+
+        // Load portfolio stats
+        async function loadPortfolio() {
+            try {
+                // Fetch both backend and autobot positions
+                const [backendRes, autobotRes] = await Promise.all([
+                    fetch('/api/positions'),
+                    fetch('/api/events/positions')
+                ]);
+                const backendData = await backendRes.json();
+                const autobotData = await autobotRes.json();
+
+                // Use autobot summary (primary trading system)
+                const as = autobotData.summary || {};
+                const stats = autobotData.stats || {};
+
+                // Portfolio value = total equity (includes realized P&L)
+                const totalEquity = as.total_equity || 10000;
+                const totalUnrealized = as.total_unrealized_pnl || 0;
+                const totalPositions = as.position_count || 0;
+                const dailyPnl = as.daily_pnl || 0;
+                const totalPnl = as.total_pnl || 0;
+
+                // Update portfolio stat
+                document.getElementById('stat-portfolio').textContent = formatCurrency(totalEquity);
+
+                // Daily P&L (realized)
+                document.getElementById('stat-daily-pnl').textContent = formatCurrency(dailyPnl, true);
+                document.getElementById('stat-daily-pnl').className = `text-2xl font-bold ${dailyPnl >= 0 ? 'text-green-400' : 'text-red-400'}`;
+
+                // Unrealized P&L from open positions
+                document.getElementById('stat-unrealized').textContent = formatCurrency(totalUnrealized, true);
+                document.getElementById('stat-unrealized').className = `text-2xl font-bold ${totalUnrealized >= 0 ? 'text-green-400' : 'text-red-400'}`;
+
+                // Trade stats from database
+                document.getElementById('stat-winrate').textContent = stats.total_trades > 0 ? stats.win_rate.toFixed(1) + '%' : '--%';
+                document.getElementById('stat-trades').textContent = stats.total_trades || 0;
+                document.getElementById('stat-positions').textContent = totalPositions;
+
+                // Combine positions
+                const backendPositions = (backendData.positions || []).map(p => ({...p, source: 'backend'}));
+                const autobotPositions = (autobotData.positions || []).map(p => ({
+                    ...p,
+                    source: 'autobot',
+                    market_name: p.market || 'Unknown Market',
+                    entry_price: p.price,
+                    current_price: p.current_price || p.price,
+                    pnl: p.unrealized_pnl || 0,
+                }));
+                const allPositions = [...autobotPositions, ...backendPositions];
+
+                // Update positions list
+                const listEl = document.getElementById('positions-list');
+                document.getElementById('positions-count').textContent = `${allPositions.length} positions`;
+
+                if (allPositions.length === 0) {
+                    listEl.innerHTML = '<p class="text-gray-500 text-sm text-center py-4">No open positions</p>';
+                } else {
+                    listEl.innerHTML = allPositions.map(pos => `
+                        <div class="flex items-center justify-between p-3 bg-gray-800/50 rounded">
+                            <div>
+                                <div class="font-medium">${truncate(pos.market_name || pos.market, 50)}</div>
+                                <div class="text-xs text-gray-400">
+                                    Entry: ${pos.entry_price?.toFixed(3) || pos.price?.toFixed(3)} |
+                                    Current: ${pos.current_price?.toFixed(3) || '-'}
+                                    ${pos.source === 'autobot' ? ' <span class="text-purple-400">[AUTO]</span>' : ''}
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="px-2 py-1 text-xs rounded ${pos.side === 'YES' || pos.side === 'BUY' ? 'bg-green-600' : 'bg-red-600'}">${pos.side}</span>
+                                <div class="text-sm font-bold ${(pos.pnl || pos.unrealized_pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}">
+                                    ${formatCurrency(pos.pnl || pos.unrealized_pnl || 0, true)}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error('Failed to load portfolio:', e);
+            }
+        }
+
+        // Load events
+        async function loadEvents() {
+            try {
+                const response = await fetch('/api/events?limit=100');
+                const data = await response.json();
+
+                const events = data.events || [];
+                const sportsEvents = events.filter(e => e.event_type?.startsWith('sports'));
+                const politicsEventTypes = [
+                    'political_news', 'legislation', 'court_ruling',
+                    'candidate_announcement', 'executive_order',
+                    'regulatory_decision', 'sec_filing', 'fda_approval'
+                ];
+                const politicsEvents = events.filter(e => politicsEventTypes.includes(e.event_type));
+
+                // Update counts
+                document.getElementById('sports-events').textContent = sportsEvents.length;
+                document.getElementById('politics-events').textContent = politicsEvents.length;
+                document.getElementById('sports-events-count').textContent = `${sportsEvents.length} events`;
+                document.getElementById('politics-events-count').textContent = `${politicsEvents.length} events`;
+
+                // Update sports events list
+                const sportsList = document.getElementById('sports-events-list');
+                if (sportsEvents.length === 0) {
+                    sportsList.innerHTML = '<p class="text-gray-500 text-sm text-center py-4">Waiting for sports events...</p>';
+                } else {
+                    sportsList.innerHTML = sportsEvents.slice(0, 10).map(e => `
+                        <div class="p-2 bg-gray-800/50 rounded text-sm">
+                            <div class="flex justify-between items-start">
+                                <span class="text-xs px-2 py-0.5 rounded bg-green-600">${e.event_type?.replace('sports_', '').toUpperCase()}</span>
+                                <span class="text-xs text-gray-500">${formatTimeAgo(e.timestamp)}</span>
+                            </div>
+                            <div class="mt-1 text-gray-200">${truncate(e.headline, 60)}</div>
+                        </div>
+                    `).join('');
+                }
+
+                // Update politics events list
+                const politicsList = document.getElementById('politics-events-list');
+                if (politicsEvents.length === 0) {
+                    politicsList.innerHTML = '<p class="text-gray-500 text-sm text-center py-4">Waiting for political events...</p>';
+                } else {
+                    politicsList.innerHTML = politicsEvents.slice(0, 10).map(e => `
+                        <div class="p-2 bg-gray-800/50 rounded text-sm">
+                            <div class="flex justify-between items-start">
+                                <span class="text-xs px-2 py-0.5 rounded ${getPoliticsColor(e.event_type)}">${e.event_type?.replace(/_/g, ' ').toUpperCase()}</span>
+                                <span class="text-xs text-gray-500">${formatTimeAgo(e.timestamp)}</span>
+                            </div>
+                            <div class="mt-1 text-gray-200">${truncate(e.headline, 60)}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error('Failed to load events:', e);
+            }
+        }
+
+        // Load trades (both backend and autobot)
+        async function loadTrades() {
+            try {
+                // Fetch both trade sources
+                const [historyRes, autobotRes] = await Promise.all([
+                    fetch('/api/trades/history?limit=20'),
+                    fetch('/api/events/trades?limit=20')
+                ]);
+                const historyData = await historyRes.json();
+                const autobotData = await autobotRes.json();
+
+                // Get autobot trade stats
+                const stats = autobotData.stats || {};
+
+                // Combine and format trades
+                const historyTrades = (historyData.trades || []).map(t => ({...t, source: 'history'}));
+                const autobotTrades = (autobotData.trades || []).map(t => ({
+                    ...t,
+                    source: 'autobot',
+                    risk_amount: t.size_usd,
+                    closed_at: t.exit_time || t.entry_time || new Date().toISOString(),
+                }));
+
+                const trades = [...autobotTrades, ...historyTrades].slice(0, 20);
+
+                document.getElementById('trades-count-label').textContent = `${stats.total_trades || 0} trades`;
+
+                // Display trade stats from autobot database (source of truth)
+                if (stats.total_trades > 0) {
+                    document.getElementById('trade-stats').textContent =
+                        `W: ${stats.wins} | L: ${stats.losses} | Win Rate: ${stats.win_rate?.toFixed(1)}%`;
+
+                    // Use stats directly from database
+                    document.getElementById('stat-avg-win').textContent = formatCurrency(stats.avg_win || 0);
+                    document.getElementById('stat-avg-loss').textContent = formatCurrency(Math.abs(stats.avg_loss || 0));
+                    document.getElementById('stat-best').textContent = formatCurrency(stats.best_trade || 0, true);
+                    // Only show worst trade if it's actually a loss (negative)
+                    const worstTrade = stats.worst_trade || 0;
+                    document.getElementById('stat-worst').textContent = worstTrade < 0 ? formatCurrency(worstTrade, true) : '-$0';
+
+                    // Calculate profit factor
+                    const totalWinAmount = (stats.avg_win || 0) * (stats.wins || 0);
+                    const totalLossAmount = Math.abs((stats.avg_loss || 0) * (stats.losses || 0));
+                    const pf = totalLossAmount > 0 ? (totalWinAmount / totalLossAmount).toFixed(2) : '--';
+                    document.getElementById('stat-pf').textContent = pf;
+                }
+
+                // Update trades table
+                const tbody = document.getElementById('trades-body');
+                // Categorize trades into sports vs politics
+                const sportsKeywords = ['NBA', 'NFL', 'NHL', 'MLB', 'Finals', 'Championship', 'Super Bowl', 'World Series', 'Stanley Cup', 'Warriors', 'Lakers', 'Chiefs', 'Eagles', 'Sabres', 'Yankees', 'Celtics', 'Dodgers'];
+                
+                const sportsTrades = autobotTrades.filter(t => {
+                    const market = (t.market_name || t.market || '').toLowerCase();
+                    return sportsKeywords.some(kw => market.includes(kw.toLowerCase()));
+                });
+                
+                const politicsTrades = autobotTrades.filter(t => {
+                    const market = (t.market_name || t.market || '').toLowerCase();
+                    return !sportsKeywords.some(kw => market.includes(kw.toLowerCase()));
+                });
+                
+                // Calculate sports stats
+                const sportsWins = sportsTrades.filter(t => t.won === true || t.won === 1).length;
+                const sportsProfit = sportsTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+                const sportsWinRate = sportsTrades.length > 0 ? (sportsWins / sportsTrades.length * 100) : 0;
+                
+                // Calculate politics stats  
+                const politicsWins = politicsTrades.filter(t => t.won === true || t.won === 1).length;
+                const politicsProfit = politicsTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+                const politicsWinRate = politicsTrades.length > 0 ? (politicsWins / politicsTrades.length * 100) : 0;
+                
+                // Update sports section
+                document.getElementById('sports-trades').textContent = sportsTrades.length;
+                document.getElementById('sports-winrate').textContent = sportsTrades.length > 0 ? sportsWinRate.toFixed(0) + '%' : '--%';
+                document.getElementById('sports-profit').textContent = (sportsProfit >= 0 ? '+' : '') + '$' + Math.abs(sportsProfit).toFixed(0);
+                document.getElementById('sports-profit').className = sportsProfit >= 0 ? 'text-base sm:text-xl font-bold text-green-400' : 'text-base sm:text-xl font-bold text-red-400';
+                
+                // Update politics section
+                document.getElementById('politics-trades').textContent = politicsTrades.length;
+                document.getElementById('politics-winrate').textContent = politicsTrades.length > 0 ? politicsWinRate.toFixed(0) + '%' : '--%';
+                document.getElementById('politics-profit').textContent = (politicsProfit >= 0 ? '+' : '') + '$' + Math.abs(politicsProfit).toFixed(0);
+                document.getElementById('politics-profit').className = politicsProfit >= 0 ? 'text-base sm:text-xl font-bold text-green-400' : 'text-base sm:text-xl font-bold text-red-400';
+                // Categorize trades into sports vs politics
+                if (trades.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" class="py-8 text-center text-gray-500">No trades yet</td></tr>';
+                } else {
+                    tbody.innerHTML = trades.map(t => {
+                        const isOpen = t.status === 'OPEN';
+                        const isClosed = t.status === 'CLOSED';
+                        const pnl = t.pnl || 0;
+                        const pnlPct = t.pnl_pct || 0;
+                        const pnlColor = pnl >= 0 ? 'text-green-400' : 'text-red-400';
+
+                        // Result badge
+                        let resultBg, result;
+                        if (isOpen) {
+                            resultBg = 'bg-blue-600';
+                            result = 'OPEN';
+                        } else if (t.won === true || pnl > 0) {
+                            resultBg = 'bg-green-600';
+                            result = 'WIN';
+                        } else if (t.won === false || pnl < 0) {
+                            resultBg = 'bg-red-600';
+                            result = 'LOSS';
+                        } else {
+                            resultBg = 'bg-gray-600';
+                            result = 'EVEN';
+                        }
+
+                        // Close reason badge
+                        const closeReason = t.close_reason || '';
+                        let reasonBg = 'bg-gray-700';
+                        let reasonDisplay = closeReason.replace(/_/g, ' ');
+                        if (closeReason === 'TAKE_PROFIT') reasonBg = 'bg-green-700';
+                        else if (closeReason === 'STOP_LOSS') reasonBg = 'bg-red-700';
+                        else if (closeReason === 'TRAILING_STOP') reasonBg = 'bg-yellow-700';
+                        else if (closeReason === 'BREAKEVEN_STOP') reasonBg = 'bg-blue-700';
+                        else if (isOpen) reasonDisplay = '-';
+
+                        const time = t.closed_at || t.exit_time || t.entry_time || new Date().toISOString();
+
+                        return `
+                            <tr class="border-b border-gray-800 hover:bg-gray-800/50">
+                                <td class="py-2 px-2 text-xs text-gray-400">${new Date(time).toLocaleString()}</td>
+                                <td class="py-2 px-2">
+                                    <div class="max-w-xs truncate">${truncate(t.market_name, 35)}</div>
+                                </td>
+                                <td class="py-2 px-2 text-center">
+                                    <span class="px-2 py-0.5 text-xs rounded ${t.side === 'YES' || t.side === 'BUY' ? 'bg-green-600' : 'bg-red-600'}">${t.side}</span>
+                                </td>
+                                <td class="py-2 px-2 text-right">${formatCurrency(t.risk_amount || t.size_usd)}</td>
+                                <td class="py-2 px-2 text-right">${t.entry_price?.toFixed(3) || '-'}</td>
+                                <td class="py-2 px-2 text-right">${isClosed ? t.exit_price?.toFixed(3) : '-'}</td>
+                                <td class="py-2 px-2 text-right font-bold ${pnlColor}">
+                                    ${isOpen ? 'PENDING' : formatCurrency(pnl, true)}
+                                    ${isClosed && pnlPct ? `<br><span class="text-xs">(${pnlPct >= 0 ? '+' : ''}${pnlPct.toFixed(1)}%)</span>` : ''}
+                                </td>
+                                <td class="py-2 px-2 text-center"><span class="px-2 py-0.5 text-xs rounded ${resultBg}">${result}</span></td>
+                                <td class="py-2 px-2 text-center"><span class="px-2 py-0.5 text-xs rounded ${reasonBg}">${reasonDisplay || '-'}</span></td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } catch (e) {
+                console.error('Failed to load trades:', e);
+            }
+        }
+
+        // Helpers
+        function formatCurrency(val, showSign = false) {
+            const num = parseFloat(val) || 0;
+            const formatted = '$' + Math.abs(num).toFixed(2);
+            if (showSign) return (num >= 0 ? '+' : '-') + formatted;
+            return formatted;
+        }
+
+        function truncate(text, max) {
+            if (!text) return '';
+            return text.length > max ? text.slice(0, max - 3) + '...' : text;
+        }
+
+        function formatTimeAgo(ts) {
+            if (!ts) return '';
+            const diff = Math.floor((Date.now() - new Date(ts)) / 1000);
+            if (diff < 60) return diff + 's ago';
+            if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+            if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+            return new Date(ts).toLocaleDateString();
+        }
+
+        function getPoliticsColor(eventType) {
+            const colors = {
+                'political_news': 'bg-blue-600',
+                'legislation': 'bg-indigo-600',
+                'court_ruling': 'bg-purple-600',
+                'candidate_announcement': 'bg-cyan-600',
+                'executive_order': 'bg-amber-600',
+                'regulatory_decision': 'bg-yellow-600',
+                'sec_filing': 'bg-orange-600',
+                'fda_approval': 'bg-emerald-600',
+            };
+            return colors[eventType] || 'bg-blue-600';
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            initEquityChart();
+            loadStatus();
+            loadPortfolio();
+            loadEvents();
+            loadTrades();
+
+            // Periodic updates
+            setInterval(loadStatus, 5000);
+            setInterval(loadPortfolio, 10000);
+            setInterval(loadEvents, 8000);
+            setInterval(loadTrades, 30000);
+        });
+    </script>
+</body>
+</html>

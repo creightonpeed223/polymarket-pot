@@ -1,0 +1,178 @@
+{
+  "strategy": {
+    "name": "News Speed Arbitrage",
+    "target_monthly_profit": 10000,
+    "recommended_capital": 25000,
+    "min_edge_to_trade": 0.20,
+    "max_position_pct": 0.12
+  },
+  "data_sources": {
+    "court": {
+      "supreme_court": {
+        "url": "https://www.supremecourt.gov/opinions/opinions.aspx",
+        "check_interval_seconds": 30,
+        "priority": 1
+      },
+      "court_listener": {
+        "url": "https://www.courtlistener.com/api/rest/v3/",
+        "check_interval_seconds": 60,
+        "priority": 2
+      }
+    },
+    "political": {
+      "white_house": {
+        "url": "https://www.whitehouse.gov/briefing-room/",
+        "check_interval_seconds": 60,
+        "priority": 1
+      },
+      "congress": {
+        "url": "https://www.congress.gov/",
+        "check_interval_seconds": 120,
+        "priority": 2
+      },
+      "twitter_accounts": [
+        "POTUS",
+        "WhiteHouse",
+        "VP",
+        "SpeakerJohnson",
+        "SenateMajLdr",
+        "GOPLeader",
+        "HouseDemocrats",
+        "SenateGOP",
+        "SenateDems"
+      ]
+    },
+    "regulatory": {
+      "sec_edgar": {
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent",
+        "check_interval_seconds": 60,
+        "priority": 1
+      },
+      "fda": {
+        "url": "https://www.fda.gov/news-events/fda-newsroom/press-announcements",
+        "check_interval_seconds": 120,
+        "priority": 2
+      },
+      "ftc": {
+        "url": "https://www.ftc.gov/news-events/news/press-releases",
+        "check_interval_seconds": 180,
+        "priority": 3
+      }
+    },
+    "news_wires": {
+      "ap_news": {
+        "priority": 1
+      },
+      "reuters": {
+        "priority": 1
+      }
+    }
+  },
+  "event_types": {
+    "supreme_court_ruling": {
+      "edge_range": [0.40, 0.90],
+      "edge_window_seconds": [30, 120],
+      "frequency_per_month": [2, 5],
+      "default_bet_size": 2000,
+      "priority": 1
+    },
+    "major_political_news": {
+      "edge_range": [0.25, 0.60],
+      "edge_window_seconds": [10, 60],
+      "frequency_per_month": [5, 15],
+      "default_bet_size": 1500,
+      "priority": 1
+    },
+    "regulatory_decision": {
+      "edge_range": [0.20, 0.50],
+      "edge_window_seconds": [20, 90],
+      "frequency_per_month": [5, 10],
+      "default_bet_size": 1500,
+      "priority": 2
+    },
+    "candidate_announcement": {
+      "edge_range": [0.20, 0.40],
+      "edge_window_seconds": [10, 45],
+      "frequency_per_month": [3, 8],
+      "default_bet_size": 1000,
+      "priority": 2
+    },
+    "sports_injury": {
+      "edge_range": [0.15, 0.30],
+      "edge_window_seconds": [15, 60],
+      "frequency_per_month": [10, 30],
+      "default_bet_size": 500,
+      "priority": 3
+    }
+  },
+  "risk_management": {
+    "max_single_bet_usd": 3000,
+    "max_single_bet_pct": 0.12,
+    "min_edge_to_trade": 0.20,
+    "max_daily_loss_usd": 2000,
+    "max_concurrent_positions": 5,
+    "capital_allocation": {
+      "ready_cash_pct": 0.60,
+      "reserve_pct": 0.32,
+      "operating_costs_pct": 0.08
+    }
+  },
+  "alerts": {
+    "channels": ["telegram", "discord", "sms", "email"],
+    "high_priority_sound": true,
+    "include_trade_recommendation": true,
+    "format": {
+      "template": "🚨 {event_type}\n\nMarket: {market_question}\nCurrent: ${current_price}\nFair Value: ${fair_value}\nEdge: {edge_pct}%\n\nACTION: {action} @ ${price}"
+    }
+  },
+  "operating_costs": {
+    "twitter_api": 100,
+    "news_feeds": 150,
+    "server": 50,
+    "court_data": 50,
+    "total_monthly": 350
+  },
+  "projections": {
+    "monthly_by_type": {
+      "slow": {
+        "events": 5,
+        "avg_bet": 500,
+        "avg_edge": 0.30,
+        "profit": 750
+      },
+      "normal": {
+        "events": 12,
+        "avg_bet": 500,
+        "avg_edge": 0.35,
+        "profit": 2100
+      },
+      "hot": {
+        "events": 25,
+        "avg_bet": 500,
+        "avg_edge": 0.40,
+        "profit": 5000
+      }
+    },
+    "scaling_path": [
+      {"month": 1, "capital": 10000, "trades": 10, "profit": 3500},
+      {"month": 2, "capital": 13500, "trades": 12, "profit": 4700},
+      {"month": 3, "capital": 18200, "trades": 12, "profit": 6400},
+      {"month": 4, "capital": 24600, "trades": 12, "profit": 8600},
+      {"month": 5, "capital": 33200, "trades": 12, "profit": 10000}
+    ]
+  },
+  "keywords": {
+    "court": [
+      "ruling", "decision", "opinion", "affirm", "reverse", "remand",
+      "granted", "denied", "unanimous", "dissent", "overturn"
+    ],
+    "political": [
+      "announces", "withdraws", "endorses", "nominates", "resigns",
+      "impeach", "veto", "signs", "executive order", "drops out"
+    ],
+    "regulatory": [
+      "approved", "denied", "rejected", "granted", "filed", "settled",
+      "charged", "investigation", "clearance", "authorization"
+    ]
+  }
+}
