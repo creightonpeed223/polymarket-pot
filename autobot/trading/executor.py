@@ -159,7 +159,7 @@ class TradeExecutor:
             return decision
 
         # Check confidence
-        if match.confidence < 0.6:
+        if match.confidence < 0.5:
             decision.reason = f"Confidence {match.confidence:.1%} too low"
             return decision
 
