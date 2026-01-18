@@ -349,6 +349,7 @@ class SpeedTradingBot:
         """Get overall bot status"""
         return {
             "running": self._running,
+            "paper_trading": config.trading.paper_trading,
             "events_processed": self._events_processed,
             "trades_executed": self._trades_executed,
             "monitors_active": len(self.monitors),
