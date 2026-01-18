@@ -689,6 +689,7 @@ async def get_autobot_positions():
     try:
         from autobot.main import get_bot
         from autobot.data import database as db
+        from autobot.config import config
         bot = get_bot()
         trader = bot.trader
 
@@ -700,8 +701,14 @@ async def get_autobot_positions():
         trade_stats = db.get_trade_stats()
         bot_state = db.get_bot_state()
 
-        # Cash balance = total equity - open positions value
-        total_equity = bot_state.get("paper_balance", 10000.0)
+        # Get balance based on trading mode
+        is_paper = config.trading.paper_trading
+        if is_paper:
+            total_equity = bot_state.get("paper_balance", 10000.0)
+        else:
+            # For live trading, fetch real USDC balance
+            total_equity = await trader.fetch_real_balance()
+
         cash_balance = total_equity - total_value
 
         return {
@@ -712,9 +719,9 @@ async def get_autobot_positions():
                 "total_unrealized_pnl": total_unrealized,
                 "cash_balance": cash_balance,
                 "total_equity": total_equity,
-                "daily_pnl": bot_state.get("daily_pnl", 0),
-                "total_pnl": bot_state.get("total_pnl", 0),
-                "paper_mode": True,
+                "daily_pnl": bot_state.get("daily_pnl", 0) if is_paper else 0,
+                "total_pnl": bot_state.get("total_pnl", 0) if is_paper else 0,
+                "paper_mode": is_paper,
             },
             "stats": trade_stats,
         }

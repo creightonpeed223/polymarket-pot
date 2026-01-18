@@ -444,8 +444,53 @@ class PolymarketTrader:
         """Get current balance"""
         if config.trading.paper_trading:
             return self._paper_balance
-        # TODO: Implement real balance check
-        return config.trading.starting_capital
+        # For live trading, return cached balance (updated by fetch_real_balance)
+        return getattr(self, '_real_balance', config.trading.starting_capital)
+
+    async def fetch_real_balance(self) -> float:
+        """Fetch real USDC balance from Polygon blockchain"""
+        try:
+            # USDC.e contract on Polygon (used by Polymarket)
+            usdc_contract = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
+            wallet_address = config.wallet.funder_address
+
+            if not wallet_address:
+                logger.warning("No wallet address configured")
+                return 0.0
+
+            # Use Polygon RPC to get balance
+            async with httpx.AsyncClient() as client:
+                # Call balanceOf on USDC contract
+                data = {
+                    "jsonrpc": "2.0",
+                    "method": "eth_call",
+                    "params": [{
+                        "to": usdc_contract,
+                        "data": f"0x70a08231000000000000000000000000{wallet_address[2:]}"  # balanceOf(address)
+                    }, "latest"],
+                    "id": 1
+                }
+
+                response = await client.post(
+                    "https://polygon-rpc.com",
+                    json=data,
+                    timeout=10.0
+                )
+                response.raise_for_status()
+                result = response.json()
+
+                if "result" in result and result["result"]:
+                    # Convert from hex, USDC has 6 decimals
+                    balance_wei = int(result["result"], 16)
+                    balance = balance_wei / 1_000_000
+                    self._real_balance = balance
+                    logger.info(f"Real USDC balance: ${balance:.2f}")
+                    return balance
+
+            return 0.0
+        except Exception as e:
+            logger.error(f"Failed to fetch real balance: {e}")
+            return getattr(self, '_real_balance', 0.0)
 
     def get_positions(self) -> List[dict]:
         """Get open positions"""
