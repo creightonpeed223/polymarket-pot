@@ -479,16 +479,31 @@
                 // Update trades table
                 const tbody = document.getElementById('trades-body');
                 // Categorize trades into sports vs politics
-                const sportsKeywords = ['NBA', 'NFL', 'NHL', 'MLB', 'Finals', 'Championship', 'Super Bowl', 'World Series', 'Stanley Cup', 'Warriors', 'Lakers', 'Chiefs', 'Eagles', 'Sabres', 'Yankees', 'Celtics', 'Dodgers'];
-                
+                const sportsKeywords = [
+                    // Leagues
+                    'NBA', 'NFL', 'NHL', 'MLB', 'MLS', 'UFC', 'PGA', 'ATP', 'WTA',
+                    // Events
+                    'Finals', 'Championship', 'Super Bowl', 'World Series', 'Stanley Cup', 'MVP', 'DPOY', 'Rookie', 'All-Star',
+                    // NFL Teams
+                    'Chiefs', 'Eagles', 'Bills', 'Ravens', 'Cowboys', 'Packers', '49ers', 'Dolphins', 'Lions', 'Bengals', 'Jets', 'Patriots', 'Broncos', 'Chargers', 'Raiders', 'Steelers', 'Browns', 'Commanders', 'Giants', 'Bears', 'Vikings', 'Saints', 'Buccaneers', 'Falcons', 'Panthers', 'Seahawks', 'Cardinals', 'Rams', 'Titans', 'Colts', 'Jaguars', 'Texans',
+                    // NBA Teams
+                    'Warriors', 'Lakers', 'Celtics', 'Bucks', 'Nuggets', 'Suns', 'Clippers', 'Mavericks', 'Heat', 'Knicks', 'Nets', '76ers', 'Cavaliers', 'Bulls', 'Raptors', 'Hawks', 'Hornets', 'Wizards', 'Pacers', 'Pistons', 'Magic', 'Timberwolves', 'Thunder', 'Pelicans', 'Grizzlies', 'Spurs', 'Kings', 'Blazers', 'Jazz', 'Rockets',
+                    // NHL Teams
+                    'Rangers', 'Devils', 'Islanders', 'Flyers', 'Penguins', 'Capitals', 'Hurricanes', 'Blue Jackets', 'Bruins', 'Maple Leafs', 'Canadiens', 'Senators', 'Sabres', 'Red Wings', 'Lightning', 'Panthers', 'Blackhawks', 'Blues', 'Wild', 'Avalanche', 'Stars', 'Predators', 'Jets', 'Flames', 'Oilers', 'Canucks', 'Kraken', 'Sharks', 'Kings', 'Ducks', 'Coyotes', 'Golden Knights',
+                    // MLB Teams
+                    'Yankees', 'Red Sox', 'Mets', 'Dodgers', 'Cubs', 'Cardinals', 'Giants', 'Braves', 'Astros', 'Phillies', 'Padres', 'Mariners', 'Blue Jays', 'Twins', 'Guardians', 'White Sox', 'Tigers', 'Royals', 'Orioles', 'Rays', 'Athletics', 'Angels', 'Rangers', 'Rockies', 'Diamondbacks', 'Reds', 'Brewers', 'Pirates', 'Marlins', 'Nationals',
+                    // Player names (common)
+                    'LeBron', 'Curry', 'Durant', 'Giannis', 'Jokic', 'Embiid', 'Tatum', 'Luka', 'Mahomes', 'Allen', 'Burrow', 'Hurts', 'Jackson', 'Kelce', 'Ohtani', 'Judge', 'Trout', 'McDavid', 'Crosby', 'Ovechkin', 'Matthews', 'Kawhi', 'Wembanyama'
+                ];
+
                 const sportsTrades = autobotTrades.filter(t => {
                     const market = (t.market_name || t.market || '').toLowerCase();
-                    return sportsKeywords.some(kw => market.includes(kw.toLowerCase()));
+                    return sportsKeywords.some(kw => market.toLowerCase().includes(kw.toLowerCase()));
                 });
-                
+
                 const politicsTrades = autobotTrades.filter(t => {
                     const market = (t.market_name || t.market || '').toLowerCase();
-                    return !sportsKeywords.some(kw => market.includes(kw.toLowerCase()));
+                    return !sportsKeywords.some(kw => market.toLowerCase().includes(kw.toLowerCase()));
                 });
                 
                 // Calculate sports stats
