@@ -30,40 +30,22 @@ class SportsMonitor(NewsMonitor):
     # RSS Feeds (most reliable)
     # ============================================
     RSS_FEEDS = {
+        # General
         "espn_top": {
             "url": "https://www.espn.com/espn/rss/news",
             "name": "ESPN Top",
             "leagues": ["general"],
         },
+        # NFL - 4 sources
         "espn_nfl": {
             "url": "https://www.espn.com/espn/rss/nfl/news",
             "name": "ESPN NFL",
             "leagues": ["nfl"],
         },
-        "espn_nba": {
-            "url": "https://www.espn.com/espn/rss/nba/news",
-            "name": "ESPN NBA",
-            "leagues": ["nba"],
-        },
-        "espn_mlb": {
-            "url": "https://www.espn.com/espn/rss/mlb/news",
-            "name": "ESPN MLB",
-            "leagues": ["mlb"],
-        },
-        "espn_nhl": {
-            "url": "https://www.espn.com/espn/rss/nhl/news",
-            "name": "ESPN NHL",
-            "leagues": ["nhl"],
-        },
         "cbssports_nfl": {
             "url": "https://www.cbssports.com/rss/headlines/nfl/",
             "name": "CBS NFL",
             "leagues": ["nfl"],
-        },
-        "cbssports_nba": {
-            "url": "https://www.cbssports.com/rss/headlines/nba/",
-            "name": "CBS NBA",
-            "leagues": ["nba"],
         },
         "yahoo_nfl": {
             "url": "https://sports.yahoo.com/nfl/rss/",
@@ -74,6 +56,96 @@ class SportsMonitor(NewsMonitor):
             "url": "https://bleacherreport.com/articles/feed?tag_id=16",
             "name": "Bleacher NFL",
             "leagues": ["nfl"],
+        },
+        # NBA - 4 sources
+        "espn_nba": {
+            "url": "https://www.espn.com/espn/rss/nba/news",
+            "name": "ESPN NBA",
+            "leagues": ["nba"],
+        },
+        "cbssports_nba": {
+            "url": "https://www.cbssports.com/rss/headlines/nba/",
+            "name": "CBS NBA",
+            "leagues": ["nba"],
+        },
+        "yahoo_nba": {
+            "url": "https://sports.yahoo.com/nba/rss/",
+            "name": "Yahoo NBA",
+            "leagues": ["nba"],
+        },
+        "bleacher_nba": {
+            "url": "https://bleacherreport.com/articles/feed?tag_id=19",
+            "name": "Bleacher NBA",
+            "leagues": ["nba"],
+        },
+        # NHL - 4 sources
+        "espn_nhl": {
+            "url": "https://www.espn.com/espn/rss/nhl/news",
+            "name": "ESPN NHL",
+            "leagues": ["nhl"],
+        },
+        "cbssports_nhl": {
+            "url": "https://www.cbssports.com/rss/headlines/nhl/",
+            "name": "CBS NHL",
+            "leagues": ["nhl"],
+        },
+        "yahoo_nhl": {
+            "url": "https://sports.yahoo.com/nhl/rss/",
+            "name": "Yahoo NHL",
+            "leagues": ["nhl"],
+        },
+        "bleacher_nhl": {
+            "url": "https://bleacherreport.com/articles/feed?tag_id=18",
+            "name": "Bleacher NHL",
+            "leagues": ["nhl"],
+        },
+        # MLB - 4 sources
+        "espn_mlb": {
+            "url": "https://www.espn.com/espn/rss/mlb/news",
+            "name": "ESPN MLB",
+            "leagues": ["mlb"],
+        },
+        "cbssports_mlb": {
+            "url": "https://www.cbssports.com/rss/headlines/mlb/",
+            "name": "CBS MLB",
+            "leagues": ["mlb"],
+        },
+        "yahoo_mlb": {
+            "url": "https://sports.yahoo.com/mlb/rss/",
+            "name": "Yahoo MLB",
+            "leagues": ["mlb"],
+        },
+        "bleacher_mlb": {
+            "url": "https://bleacherreport.com/articles/feed?tag_id=17",
+            "name": "Bleacher MLB",
+            "leagues": ["mlb"],
+        },
+        # Soccer - 3 sources
+        "espn_soccer": {
+            "url": "https://www.espn.com/espn/rss/soccer/news",
+            "name": "ESPN Soccer",
+            "leagues": ["soccer"],
+        },
+        "yahoo_soccer": {
+            "url": "https://sports.yahoo.com/soccer/rss/",
+            "name": "Yahoo Soccer",
+            "leagues": ["soccer"],
+        },
+        "bleacher_soccer": {
+            "url": "https://bleacherreport.com/articles/feed?tag_id=20",
+            "name": "Bleacher Soccer",
+            "leagues": ["soccer"],
+        },
+        # UFC/MMA - 2 sources
+        "espn_mma": {
+            "url": "https://www.espn.com/espn/rss/mma/news",
+            "name": "ESPN MMA",
+            "leagues": ["ufc", "mma"],
+        },
+        "bleacher_mma": {
+            "url": "https://bleacherreport.com/articles/feed?tag_id=136",
+            "name": "Bleacher MMA",
+            "leagues": ["ufc", "mma"],
         },
     }
 
