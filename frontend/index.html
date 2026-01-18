@@ -434,8 +434,8 @@
             try {
                 // Fetch both trade sources
                 const [historyRes, autobotRes] = await Promise.all([
-                    fetch('/api/trades/history?limit=20'),
-                    fetch('/api/events/trades?limit=20')
+                    fetch('/api/trades/history?limit=100'),
+                    fetch('/api/events/trades?limit=100')
                 ]);
                 const historyData = await historyRes.json();
                 const autobotData = await autobotRes.json();
