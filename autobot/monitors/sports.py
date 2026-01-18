@@ -234,26 +234,77 @@ class SportsMonitor(NewsMonitor):
     # ============================================
     STAR_PLAYERS = {
         "nfl": [
+            # QBs
             "mahomes", "allen", "burrow", "hurts", "lamar", "herbert", "tua",
-            "rodgers", "prescott", "dak", "kelce", "travis", "hill", "tyreek",
-            "chase", "jefferson", "diggs", "adams", "henry", "chubb", "mccaffrey",
-            "donald", "parsons", "watt", "bosa", "garrett",
+            "rodgers", "prescott", "dak", "stroud", "richardson", "love", "purdy",
+            "lawrence", "stafford", "jackson", "cousins", "wilson", "fields",
+            # Skill players
+            "kelce", "travis", "hill", "tyreek", "chase", "jefferson", "diggs",
+            "adams", "henry", "chubb", "mccaffrey", "taylor", "cook", "barkley",
+            "lamb", "higgins", "waddle", "brown", "metcalf", "deebo", "kupp",
+            "andrews", "kittle", "hockenson", "pitts", "waller",
+            # Defense
+            "donald", "parsons", "watt", "bosa", "garrett", "mack", "crosby",
+            "white", "miller", "hendrickson", "sauce", "gardner", "ramsey",
+            "diggs", "hamilton", "hyde", "minkah", "fitzpatrick",
         ],
         "nba": [
+            # Top stars
             "lebron", "james", "curry", "steph", "durant", "kd", "giannis",
             "jokic", "embiid", "tatum", "luka", "doncic", "morant", "ja",
-            "booker", "mitchell", "lillard", "dame", "kawhi", "leonard",
-            "anthony", "edwards", "wembanyama", "wemby", "victor",
+            "kawhi", "leonard", "wembanyama", "wemby", "victor",
+            # All-stars
+            "booker", "mitchell", "lillard", "dame", "edwards", "ant",
+            "brunson", "harden", "kyrie", "irving", "butler", "jimmy",
+            "towns", "kat", "randle", "brown", "jaylen", "holiday", "jrue",
+            "bam", "adebayo", "siakam", "pascal", "fox", "haliburton", "tyrese",
+            "garland", "mobley", "murray", "jamal", "dejounte", "westbrook",
+            "george", "pg", "zion", "williamson", "ingram", "beal", "lavine",
+            "derozan", "young", "trae", "sga", "gilgeous", "alexander",
         ],
         "mlb": [
+            # Hitters
             "ohtani", "shohei", "trout", "judge", "soto", "acuna", "tatis",
             "betts", "freeman", "turner", "alvarez", "devers", "harper",
             "machado", "arenado", "vlad", "guerrero", "rodriguez", "julio",
+            "tucker", "riley", "olson", "schwarber", "seager", "semien",
+            "goldschmidt", "lindor", "ramirez", "jose", "bogaerts", "correa",
+            # Pitchers
+            "degrom", "scherzer", "cole", "verlander", "alcantara", "kershaw",
+            "burnes", "wheeler", "nola", "fried", "bieber", "ohtani", "musgrove",
         ],
         "nhl": [
+            # Forwards
             "mcdavid", "connor", "mackinnon", "draisaitl", "makar", "kaprizov",
             "matthews", "marner", "ovechkin", "ovi", "crosby", "sid", "kucherov",
-            "pastrnak", "panarin", "bedard", "connor",
+            "pastrnak", "panarin", "bedard", "huberdeau", "marchand", "bergeron",
+            "stamkos", "point", "barkov", "tkachuk", "matthew", "brady",
+            "pettersson", "rantanen", "forsberg", "debrincat", "zegras",
+            # Goalies
+            "vasilevskiy", "shesterkin", "hellebuyck", "demko", "saros",
+            "oettinger", "sorokin", "andersen", "markstrom", "fleury",
+        ],
+        "soccer": [
+            # Top stars
+            "messi", "ronaldo", "mbappe", "haaland", "vinicius", "bellingham",
+            "salah", "kane", "neymar", "lewandowski", "de bruyne", "modric",
+            "benzema", "griezmann", "son", "saka", "foden", "pedri", "gavi",
+            "palmer", "martinelli", "rashford", "bruno", "fernandes", "rice",
+            "casemiro", "rodri", "kimmich", "muller", "davies", "pulisic",
+        ],
+        "ufc": [
+            # Champions & top fighters
+            "jones", "jon", "adesanya", "izzy", "makhachev", "islam",
+            "volkanovski", "volk", "pereira", "alex", "edwards", "leon",
+            "pantoja", "o'malley", "sean", "sterling", "yan", "dvalishvili",
+            "chimaev", "khamzat", "strickland", "poatan", "grasso", "shevchenko",
+            "nunes", "ngannou", "usman", "covington", "masvidal", "diaz", "mcgregor",
+        ],
+        "mma": [
+            # Same as UFC
+            "jones", "jon", "adesanya", "izzy", "makhachev", "islam",
+            "volkanovski", "volk", "pereira", "alex", "edwards", "leon",
+            "chimaev", "khamzat", "strickland", "mcgregor", "diaz",
         ],
     }
 
