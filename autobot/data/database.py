@@ -6,6 +6,7 @@ Stores closed trades and bot state across restarts
 import sqlite3
 import json
 import os
+import shutil
 from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
 from contextlib import contextmanager
@@ -17,6 +18,70 @@ logger = get_logger(__name__)
 # Database file location
 DB_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(DB_DIR, "trades.db")
+BACKUP_DIR = os.path.join(DB_DIR, "backups")
+
+
+def backup_database() -> Optional[str]:
+    """Create a timestamped backup of the database. Returns backup path or None on failure."""
+    try:
+        if not os.path.exists(DB_PATH):
+            logger.warning("No database to backup")
+            return None
+
+        # Create backup directory
+        os.makedirs(BACKUP_DIR, exist_ok=True)
+
+        # Create timestamped backup filename
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_filename = f"trades_backup_{timestamp}.db"
+        backup_path = os.path.join(BACKUP_DIR, backup_filename)
+
+        # Copy the database
+        shutil.copy2(DB_PATH, backup_path)
+
+        logger.info(f"Database backed up to {backup_path}")
+
+        # Keep only last 10 backups
+        backups = sorted([f for f in os.listdir(BACKUP_DIR) if f.endswith('.db')])
+        while len(backups) > 10:
+            old_backup = backups.pop(0)
+            os.remove(os.path.join(BACKUP_DIR, old_backup))
+            logger.debug(f"Removed old backup: {old_backup}")
+
+        return backup_path
+    except Exception as e:
+        logger.error(f"Failed to backup database: {e}")
+        return None
+
+
+def restore_from_backup(backup_path: str) -> bool:
+    """Restore database from a backup file."""
+    try:
+        if not os.path.exists(backup_path):
+            logger.error(f"Backup file not found: {backup_path}")
+            return False
+
+        # Create backup of current before restoring
+        if os.path.exists(DB_PATH):
+            pre_restore_backup = DB_PATH + ".pre_restore"
+            shutil.copy2(DB_PATH, pre_restore_backup)
+
+        shutil.copy2(backup_path, DB_PATH)
+        logger.info(f"Database restored from {backup_path}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to restore database: {e}")
+        return False
+
+
+def list_backups() -> List[str]:
+    """List available database backups."""
+    try:
+        if not os.path.exists(BACKUP_DIR):
+            return []
+        return sorted([f for f in os.listdir(BACKUP_DIR) if f.endswith('.db')], reverse=True)
+    except Exception:
+        return []
 
 
 @contextmanager
@@ -36,6 +101,10 @@ def get_connection():
 
 def init_database():
     """Initialize database tables"""
+    # Backup existing database before any changes
+    if os.path.exists(DB_PATH):
+        backup_database()
+
     with get_connection() as conn:
         cursor = conn.cursor()
 
