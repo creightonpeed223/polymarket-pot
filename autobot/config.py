@@ -27,7 +27,7 @@ class TradingConfig:
 
     # Stop loss / Take profit / Trailing stop (as percentages)
     stop_loss_pct: float = 0.15  # 15% stop loss - protects from big losses
-    take_profit_pct: float = 0.50  # 50% take profit - let winners run longer
+    take_profit_pct: float = 0.40  # 40% take profit - balanced approach
     trailing_stop_pct: float = 0.07  # 7% trailing stop - locks in more profit
     breakeven_trigger_pct: float = 0.10  # Move stop to breakeven after 10% profit
     use_trailing_stop: bool = True  # Enable trailing stop after breakeven
