@@ -259,6 +259,7 @@ class TradeExecutor:
                 price=match.current_yes_price if match.recommended_side == "YES" else match.current_no_price,
                 market_question=match.question,
                 risk_amount=decision.risk_amount,
+                prediction=match.recommended_side,  # YES or NO
             )
 
             if result:

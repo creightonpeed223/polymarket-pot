@@ -115,6 +115,7 @@ def init_database():
                 market TEXT,
                 token_id TEXT,
                 side TEXT,
+                prediction TEXT,
                 size REAL,
                 entry_price REAL,
                 exit_price REAL,
@@ -134,6 +135,12 @@ def init_database():
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
             )
         """)
+
+        # Add prediction column if it doesn't exist (for existing databases)
+        try:
+            cursor.execute("ALTER TABLE closed_trades ADD COLUMN prediction TEXT DEFAULT 'YES'")
+        except:
+            pass  # Column already exists
 
         # Bot state table (single row for current state)
         cursor.execute("""
@@ -160,6 +167,7 @@ def init_database():
                 token_id TEXT,
                 market TEXT,
                 side TEXT,
+                prediction TEXT,
                 size REAL,
                 price REAL,
                 value REAL,
@@ -175,6 +183,12 @@ def init_database():
             )
         """)
 
+        # Add prediction column if it doesn't exist (for existing databases)
+        try:
+            cursor.execute("ALTER TABLE open_positions ADD COLUMN prediction TEXT DEFAULT 'YES'")
+        except:
+            pass  # Column already exists
+
         logger.info(f"Database initialized at {DB_PATH}")
 
 
@@ -185,16 +199,17 @@ def save_closed_trade(trade: Dict[str, Any]) -> bool:
             cursor = conn.cursor()
             cursor.execute("""
                 INSERT OR REPLACE INTO closed_trades (
-                    id, market, token_id, side, size, entry_price, exit_price,
+                    id, market, token_id, side, prediction, size, entry_price, exit_price,
                     risk_amount, pnl, pnl_pct, won, close_reason, entry_time,
                     exit_time, stop_loss_price, take_profit_price,
                     breakeven_triggered, trailing_stop_active, highest_price, paper
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 trade.get("id"),
                 trade.get("market"),
                 trade.get("token_id"),
                 trade.get("side"),
+                trade.get("prediction", "YES"),
                 trade.get("size"),
                 trade.get("entry_price"),
                 trade.get("exit_price"),
@@ -232,11 +247,18 @@ def get_closed_trades(limit: int = 100) -> List[Dict[str, Any]]:
 
             trades = []
             for row in cursor.fetchall():
+                # Handle prediction column (may not exist in older databases)
+                try:
+                    prediction = row["prediction"] or "YES"
+                except (KeyError, IndexError):
+                    prediction = "YES"
+
                 trades.append({
                     "id": row["id"],
                     "market": row["market"],
                     "token_id": row["token_id"],
                     "side": row["side"],
+                    "prediction": prediction,
                     "size": row["size"],
                     "entry_price": row["entry_price"],
                     "exit_price": row["exit_price"],
@@ -401,15 +423,16 @@ def save_open_position(position: Dict[str, Any]) -> bool:
             cursor = conn.cursor()
             cursor.execute("""
                 INSERT OR REPLACE INTO open_positions (
-                    id, token_id, market, side, size, price, value, risk_amount,
+                    id, token_id, market, side, prediction, size, price, value, risk_amount,
                     stop_loss_price, take_profit_price, breakeven_trigger_price,
                     highest_price, breakeven_triggered, trailing_stop_active, entry_time, paper
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 position.get("id"),
                 position.get("token_id"),
                 position.get("market"),
                 position.get("side"),
+                position.get("prediction", "YES"),
                 position.get("size"),
                 position.get("price"),
                 position.get("value"),
@@ -437,11 +460,18 @@ def get_open_positions() -> List[Dict[str, Any]]:
             cursor.execute("SELECT * FROM open_positions")
             positions = []
             for row in cursor.fetchall():
+                # Handle prediction column (may not exist in older databases)
+                try:
+                    prediction = row["prediction"] or "YES"
+                except (KeyError, IndexError):
+                    prediction = "YES"
+
                 positions.append({
                     "id": row["id"],
                     "token_id": row["token_id"],
                     "market": row["market"],
                     "side": row["side"],
+                    "prediction": prediction,
                     "size": row["size"],
                     "price": row["price"],
                     "value": row["value"],

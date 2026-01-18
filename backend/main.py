@@ -740,6 +740,7 @@ async def get_autobot_trades(limit: int = Query(default=20, le=100)):
                 "id": pos.get("id"),
                 "market_name": pos.get("market", "Unknown"),
                 "side": pos.get("side"),
+                "prediction": pos.get("prediction", "YES"),  # YES or NO
                 "size_usd": pos.get("value", 0),
                 "size_shares": pos.get("size", 0),
                 "entry_price": pos.get("price", 0),
@@ -766,6 +767,7 @@ async def get_autobot_trades(limit: int = Query(default=20, le=100)):
                 "id": trade.get("id"),
                 "market_name": trade.get("market", "Unknown"),
                 "side": trade.get("side"),
+                "prediction": trade.get("prediction", "YES"),  # YES or NO
                 "size_usd": trade.get("risk_amount", 0),
                 "size_shares": trade.get("size", 0),
                 "entry_price": trade.get("entry_price", 0),

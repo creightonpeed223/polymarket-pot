@@ -177,6 +177,7 @@ class PolymarketTrader:
         price: float,
         market_question: str = "",
         risk_amount: float = 0.0,  # Actual amount at risk (equity × risk%)
+        prediction: str = "",  # "YES" or "NO" - the outcome we're betting on
     ) -> Optional[dict]:
         """
         Place an order on Polymarket
@@ -206,7 +207,7 @@ class PolymarketTrader:
 
         # Paper trading mode
         if config.trading.paper_trading:
-            return await self._paper_order(token_id, side, size, price, market_question, risk_amount)
+            return await self._paper_order(token_id, side, size, price, market_question, risk_amount, prediction)
 
         # Real trading
         if not self._clob_client:
@@ -260,6 +261,7 @@ class PolymarketTrader:
         price: float,
         market_question: str,
         risk_amount: float = 0.0,
+        prediction: str = "",
     ) -> dict:
         """Simulate a paper trading order"""
         position_value = size * price
@@ -283,6 +285,7 @@ class PolymarketTrader:
             "token_id": token_id,
             "market": market_question,
             "side": side,
+            "prediction": prediction or "YES",  # YES or NO - the outcome we're betting on
             "size": size,
             "price": price,
             "value": position_value,
@@ -363,6 +366,7 @@ class PolymarketTrader:
             "market": position.get("market", "Unknown"),
             "token_id": position.get("token_id", ""),
             "side": side,
+            "prediction": position.get("prediction", "YES"),  # YES or NO
             "size": size,
             "entry_price": entry_price,
             "exit_price": exit_price,
