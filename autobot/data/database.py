@@ -330,12 +330,15 @@ def get_bot_state() -> Dict[str, Any]:
             cursor = conn.cursor()
 
             # Calculate actual totals from trades to ensure consistency
+            # Use timezone offset for daily PnL (default: US Central = -6 hours from UTC)
+            # This ensures "today" matches the user's local date, not UTC
+            timezone_offset_hours = -6  # Central Time (adjust as needed)
             cursor.execute("""
                 SELECT
                     COALESCE(SUM(pnl), 0) as total_pnl,
-                    COALESCE(SUM(CASE WHEN date(exit_time) = date('now') THEN pnl ELSE 0 END), 0) as daily_pnl
+                    COALESCE(SUM(CASE WHEN date(exit_time, ? || ' hours') = date('now', ? || ' hours') THEN pnl ELSE 0 END), 0) as daily_pnl
                 FROM closed_trades
-            """)
+            """, (str(timezone_offset_hours), str(timezone_offset_hours)))
             trade_row = cursor.fetchone()
             total_pnl = trade_row["total_pnl"] if trade_row else 0.0
             daily_pnl = trade_row["daily_pnl"] if trade_row else 0.0
