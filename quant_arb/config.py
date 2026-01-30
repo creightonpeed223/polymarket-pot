@@ -122,8 +122,6 @@ class Config:
         "https://www.supremecourt.gov/rss/cases/opinions.xml",
         # AP Wire - Very Fast
         "https://rsshub.app/apnews/topics/apf-politics",
-        # Crypto (for Polymarket relevance)
-        "https://cointelegraph.com/rss",
     ])
 
     # Keywords to track (for news relevance) - focused on politics
@@ -137,8 +135,6 @@ class Config:
         "desantis", "haley", "vance", "harris", "pelosi", "mcconnell",
         # Regulatory/Legal
         "sec", "doj", "fbi", "ruling", "lawsuit", "settlement",
-        # Crypto (still relevant for Polymarket)
-        "bitcoin", "ethereum", "crypto", "etf",
     ])
 
     # Logging
