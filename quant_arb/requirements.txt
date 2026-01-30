@@ -1,0 +1,13 @@
+# Core async/http
+httpx>=0.25.0
+websockets>=12.0
+aiohttp>=3.9.0
+
+# Polymarket
+py-clob-client>=0.12.0
+
+# Environment
+python-dotenv>=1.0.0
+
+# Optional: faster JSON
+orjson>=3.9.0
